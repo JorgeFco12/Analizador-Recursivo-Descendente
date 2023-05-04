@@ -1,0 +1,94 @@
+//JORGE FRANCISCO ANGULO FLORES
+//ANALIZADOR RECURSIVO DESCENDENTE
+using System;
+
+namespace Programa
+{
+
+    class Programa
+    {
+        static void Main(string[] args)
+        {
+
+            string entrada = "i*i";
+            AnalizadorRecursivo analizador = new AnalizadorRecursivo(entrada);
+
+            Console.WriteLine("Expresion: " + entrada);
+            Console.WriteLine("Resultado: " + (analizador.Analizador() ? "Válido/Correcto" : "Inválido/Incorrecto"));
+        }
+    }
+    class AnalizadorRecursivo
+    {
+
+        private readonly string entrada;
+        private int posicionActual;
+
+        public AnalizadorRecursivo(string entrada)
+        {
+            this.entrada = entrada;
+            posicionActual = 0;
+        }
+
+        public bool Analizador()
+        {
+            try
+            {
+                Expresion();
+                return posicionActual == entrada.Length;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error en sintaxis: " + ex.Message);
+                return false;
+            }
+            finally
+            {
+                posicionActual = 0;
+            }
+        }
+
+        private void Expresion()
+        {
+            Termino();
+            while (posicionActual < entrada.Length && entrada[posicionActual] == '+')
+            {
+                posicionActual++;
+                Termino();
+            }
+        }
+
+        private void Termino()
+        {
+            Factor();
+            while (posicionActual < entrada.Length && entrada[posicionActual] == '*')
+            {
+                posicionActual++;
+                Factor();
+            }
+        }
+
+        private void Factor()
+        {
+            if (posicionActual < entrada.Length && char.IsLetter(entrada[posicionActual]))
+            {
+                posicionActual++;
+            }
+            else if (posicionActual < entrada.Length && entrada[posicionActual] == '(')
+            {
+                posicionActual++;
+                Expresion();
+                if (posicionActual >= entrada.Length || entrada[posicionActual] != ')')
+                {
+                    throw new Exception("Error en parentesis que cierra");
+                }
+                posicionActual++;
+            }
+            else
+            {
+                throw new Exception("Elemento no válido");
+            }
+        }
+    }
+
+
+}
